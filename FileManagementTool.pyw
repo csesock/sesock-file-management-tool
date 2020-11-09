@@ -8,8 +8,15 @@ from os import rename, listdir
 
 master = tk.Tk()
 master.title("United Systems File Management Tool v0.0.2")
+left_edge = master.winfo_screenwidth()/3
+top_edge = master.winfo_screenheight()/3
 master.geometry('%dx%d+250+250' %(500, 560))
+master.resizable(False, False)
+
 BUTTON_WIDTH = 18
+
+master.bind('<Control-c>', lambda event: console.delete(1.0, "end"))
+master.bind('<F1>', lambda event: aboutDialog())
 
 try:
     dirp = os.path.dirname(__file__)
