@@ -7,7 +7,7 @@ import os, shutil
 from os import rename, listdir
 
 master = tk.Tk()
-master.title("United Systems File Management Tool v0.0.2")
+master.title("United Systems File Management Tool v0.0.3")
 left_edge = master.winfo_screenwidth()/3
 top_edge = master.winfo_screenheight()/3
 master.geometry('%dx%d+250+250' %(500, 560))
@@ -42,31 +42,26 @@ directoryText = ttk.Label(tabBasicOperations, textvariable=text, foreground='dar
 
 #Interface buttons
 #Column 1
-fileButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, command=lambda:renameFiles()).place(x=40, y=60)
-moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, command=lambda:moveupFiles()).place(x=40, y=90)
-backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, command=lambda:backupFiles()).place(x=40, y=120)
-compressButton = ttk.Button(tabBasicOperations,text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=150)
-#Column 2
-# test1button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=60)
-# test2button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=90)
-# test3button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=120)
-# test4button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=150)
-# test5button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=180)
+renameButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, command=lambda:renameFiles()).place(x=40, y=60)
+organizeButton = ttk.Button(tabBasicOperations, text="Organize Files", width=BUTTON_WIDTH, command=lambda:organizeFiles()).place(x=40, y=90)
+moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, command=lambda:moveupFiles()).place(x=40, y=120)
+backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, command=lambda:backupFiles()).place(x=40, y=150)
+compressButton = ttk.Button(tabBasicOperations,text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=180)
 #Column 3
 directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=326, y=60)
 listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=326, y=90)
-#settingsButton = ttk.Button(text="Settings", width=BUTTON_WIDTH).place(x=326, y=90)
-
-
-console = tk.Text(height=14, width=59, background='black', foreground='lawn green', insertborderwidth=7, undo=True, bd=3)
-console.place(x=10, y=300)
+clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=BUTTON_WIDTH, command=lambda:clearConsole()).place(x=326, y=120)
+resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=326, y=150)
+#Console
+console = tk.Text(height=17, width=59, background='black', foreground='lawn green', insertborderwidth=7, undo=True, bd=3)
+console.place(x=10, y=250)
 
 console.insert(1.0, "United Systems File Management Tool [version 0.0.3]")
 console.insert(2.0, "\n")
 console.insert(2.0, "(c) 2020 United Systems and Software, Inc.")
 console.insert(3.0, "\n")
 
-#menu
+#Menu
 menubar = tk.Menu(master)
 
 filemenu = tk.Menu(menubar, tearoff=0)
@@ -94,16 +89,16 @@ editmenu.add_cascade(label="Theme", menu=submenu)
 menubar.add_cascade(label="Edit", menu=editmenu)
 
 windowmenu = tk.Menu(menubar, tearoff=0)
-#windowmenu.add_command(label="Full Screen", accelerator="F11", command=lambda:fullscreenWindow())
 windowmenu.add_separator()
-#windowmenu.add_command(label="Reset Window", accelerator="F10", command=lambda:resetWindow())
 menubar.add_cascade(label="Window", menu=windowmenu)
 
 helpmenu = tk.Menu(menubar, tearoff=0)
 helpmenu.add_command(label="About This Tool", accelerator='F1', command=lambda:aboutDialog())
-#helpmenu.add_command(label="Purge Log Files", command=lambda:Logging.deleteLog(int(logDeleteOldInput.get())))
 menubar.add_cascade(label="Help", menu=helpmenu)
 
+#Functions
+
+#Batch renaming of files
 def renameFiles(event=None):
     console.delete(1.0, 'end')
     console.insert(1.0, 'Renaming Files...\n')
@@ -117,6 +112,12 @@ def renameFiles(event=None):
     
     console.insert(2.0, "Files successfully renamed")
 
+def organizeFiles(event=None):
+    console.delete(1.0, "end")
+    console.insert(1.0, "Organizing Files...")
+    #shutil.move(path+'/'+file_, path+'/'+ext+'/'+file_)
+
+#Moves all files in current directory up one level
 def moveupFiles(event=None):
     filename = filedialog.askdirectory()
     for root, dirs, files in os.walk(filename, topdown=False):
@@ -126,6 +127,7 @@ def moveupFiles(event=None):
             except OSError:
                 pass
 
+#Creates backup of files in current directory
 def backupFiles(event=None):
     console.delete(1.0, 'end')
     console.insert(1.0, "Opening Backup File dialog...\n")
@@ -135,10 +137,12 @@ def backupFiles(event=None):
 
     console.insert(2.0, "Files successfully backed up")
 
+#Compresses files in current directory
 def compressFiles(event=None):
     filename = tk.filedialog.askopenfilename(title="Choose File to Compress")
     shutil.make_archive('compressed', 'zip', filename)
 
+#Prints all files in current directory to console
 def listFiles(event=None):
     files = os.listdir(full_directory)
     console.delete(1.0, 'end')
@@ -147,6 +151,7 @@ def listFiles(event=None):
         console.insert(counter, file+'\n')
         counter+=1.0
 
+#Changes current directory used by the tool
 def changeDirectory(event=None):
     console.delete(1.0, 'end')
     console.insert(1.0, "Changing directory...\n")
@@ -159,6 +164,16 @@ def changeDirectory(event=None):
     full_directory = filename 
     text.set(filename)
     console.insert(2.0, "Directory successfully changed\n")
+
+def clearConsole(event=None):
+    console.delete(1.0, "end")
+
+def resetDirectory(event=None):
+    console.delete(1.0, "end")
+    global full_directory
+    full_directory = os.getcwd()
+    text.set(full_directory)
+    console.insert(2.0, "Directory Reset")
 
 def changeTheme(theme):
     s = ttk.Style()
