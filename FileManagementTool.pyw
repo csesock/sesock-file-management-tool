@@ -29,31 +29,39 @@ full_directory = os.getcwd()
 text = tk.StringVar()
 text.set(full_directory[-50:])
 
-currentDirectory = ttk.Label(text="Current Directory: ").place(x=40, y=20)
-directoryText = ttk.Label(textvariable=text, foreground='dark slate gray').place(x=140, y=20)
+TAB_CONTROL = ttk.Notebook(master)
+tabBasicOperations = ttk.Frame(TAB_CONTROL)
+TAB_CONTROL.add(tabBasicOperations, text="Basic Tools")
+tabSettings = ttk.Frame(TAB_CONTROL)
+TAB_CONTROL.add(tabSettings, text="Settings")
+
+TAB_CONTROL.pack(expand=1, fill="both")
+
+currentDirectory = ttk.Label(tabBasicOperations, text="Current Directory: ").place(x=40, y=20)
+directoryText = ttk.Label(tabBasicOperations, textvariable=text, foreground='dark slate gray').place(x=140, y=20)
 
 #Interface buttons
 #Column 1
-fileButton = ttk.Button(text="Rename Files", width=BUTTON_WIDTH, command=lambda:renameFiles()).place(x=40, y=60)
-moveupButton = ttk.Button(text="Move Files Up", width=BUTTON_WIDTH, command=lambda:moveupFiles()).place(x=40, y=90)
-backupButton = ttk.Button(text='Backup Files', width=BUTTON_WIDTH, command=lambda:backupFiles()).place(x=40, y=120)
-compressButton = ttk.Button(text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=150)
-listfilesButton = ttk.Button(text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=40, y=180)
+fileButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, command=lambda:renameFiles()).place(x=40, y=60)
+moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, command=lambda:moveupFiles()).place(x=40, y=90)
+backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, command=lambda:backupFiles()).place(x=40, y=120)
+compressButton = ttk.Button(tabBasicOperations,text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=150)
 #Column 2
-test1button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=60)
-test2button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=90)
-test3button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=120)
-test4button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=150)
-test5button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=180)
+# test1button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=60)
+# test2button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=90)
+# test3button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=120)
+# test4button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=150)
+# test5button = ttk.Button(text="Test 1", width=BUTTON_WIDTH).place(x=183, y=180)
 #Column 3
-directoryButton = ttk.Button(text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=326, y=60)
-settingsButton = ttk.Button(text="Settings", width=BUTTON_WIDTH).place(x=326, y=90)
+directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=326, y=60)
+listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=326, y=90)
+#settingsButton = ttk.Button(text="Settings", width=BUTTON_WIDTH).place(x=326, y=90)
 
 
 console = tk.Text(height=14, width=59, background='black', foreground='lawn green', insertborderwidth=7, undo=True, bd=3)
 console.place(x=10, y=300)
 
-console.insert(1.0, "United Systems File Management Tool [version 0.0.2]")
+console.insert(1.0, "United Systems File Management Tool [version 0.0.3]")
 console.insert(2.0, "\n")
 console.insert(2.0, "(c) 2020 United Systems and Software, Inc.")
 console.insert(3.0, "\n")
@@ -98,14 +106,15 @@ menubar.add_cascade(label="Help", menu=helpmenu)
 
 def renameFiles(event=None):
     console.delete(1.0, 'end')
-    console.insert(1.0, 'Opening File Rename dialog...\n')
+    console.insert(1.0, 'Renaming Files...\n')
 
-    directory = filedialog.askdirectory()
+    directory = full_directory
     to_be_named = os.listdir(path = directory)
 
     for i in range(0, len(to_be_named)):
-        os.rename(to_be_named[i], str(i + 1))
-
+        extension = os.path.splitext(to_be_named[i])[1]
+        os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, str(i)+extension))
+    
     console.insert(2.0, "Files successfully renamed")
 
 def moveupFiles(event=None):
@@ -128,7 +137,6 @@ def backupFiles(event=None):
 
 def compressFiles(event=None):
     filename = tk.filedialog.askopenfilename(title="Choose File to Compress")
-    #shutil.make_archive('compressed', 'zip', os.getcwd())
     shutil.make_archive('compressed', 'zip', filename)
 
 def listFiles(event=None):
@@ -150,7 +158,6 @@ def changeDirectory(event=None):
     global full_directory
     full_directory = filename 
     text.set(filename)
-
     console.insert(2.0, "Directory successfully changed\n")
 
 def changeTheme(theme):
@@ -158,7 +165,7 @@ def changeTheme(theme):
     s.theme_use(theme)
 
 def aboutDialog():
-    dialog = """ Author: Chris Sesock \n Version: 0.0.2 \n Commit: 077788d6166f5d69c9b660454aa264dd62956fb6 \n Date: 2020-11-06:12:00:00 \n Python: 3.8.3 \n OS: Windows_NT x64 10.0.10363
+    dialog = """ Author: Chris Sesock \n Version: 0.0.3 \n Commit: 077788d6166f5d69c9b660454aa264dd62956fb6 \n Date: 2020-11-06:12:00:00 \n Python: 3.8.3 \n OS: Windows_NT x64 10.0.10363
              """
     messagebox.showinfo("About", dialog)
 
