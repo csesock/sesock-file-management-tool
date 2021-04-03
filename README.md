@@ -15,4 +15,4 @@ This tool is in the alpha stage. Most features are yet to be added/implemented.
 
 ##
 
-For feature requests/comments, don't email me. I wont' answer. 
+For feature requests/comments, don't email me. I won't answer. 
