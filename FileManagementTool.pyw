@@ -5,9 +5,10 @@ from tkinter import filedialog, messagebox
 from tkinter.filedialog import askopenfilename
 import os, shutil
 from os import rename, listdir
+import time
 
 master = tk.Tk()
-master.title("United Systems File Management Tool v0.0.3")
+master.title("Sesock File Management Tool v0.0.4")
 left_edge = master.winfo_screenwidth()/3
 top_edge = master.winfo_screenheight()/3
 master.geometry('%dx%d+250+250' %(500, 560))
@@ -52,14 +53,13 @@ directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", wid
 listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=326, y=90)
 clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=BUTTON_WIDTH, command=lambda:clearConsole()).place(x=326, y=120)
 resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=326, y=150)
+fileCountButton = ttk.Button(tabBasicOperations, text="File Count", width=BUTTON_WIDTH, command=lambda:getFileCount()).place(x=326, y=180)
 #Console
-console = tk.Text(height=17, width=59, background='black', foreground='lawn green', insertborderwidth=7, undo=True, bd=3)
+console = tk.Text(height=15, width=59, foreground='black', insertborderwidth=7, undo=True, bd=3)
 console.place(x=10, y=250)
+#Progress Bar
+progress = ttk.Progressbar(master, orient=HORIZONTAL, length=480, mode='determinate').place(x=10, y=505)
 
-console.insert(1.0, "United Systems File Management Tool [version 0.0.3]")
-console.insert(2.0, "\n")
-console.insert(2.0, "(c) 2020 United Systems and Software, Inc.")
-console.insert(3.0, "\n")
 
 #Menu
 menubar = tk.Menu(master)
@@ -89,11 +89,12 @@ editmenu.add_cascade(label="Theme", menu=submenu)
 menubar.add_cascade(label="Edit", menu=editmenu)
 
 windowmenu = tk.Menu(menubar, tearoff=0)
-windowmenu.add_separator()
 menubar.add_cascade(label="Window", menu=windowmenu)
+windowmenu.add_command(label="Full Screen")
+windowmenu.add_command(label="Reset Window")
 
 helpmenu = tk.Menu(menubar, tearoff=0)
-helpmenu.add_command(label="About This Tool", accelerator='F1', command=lambda:aboutDialog())
+helpmenu.add_command(label="About", accelerator='F1', command=lambda:aboutDialog())
 menubar.add_cascade(label="Help", menu=helpmenu)
 
 #Functions
@@ -106,10 +107,16 @@ def renameFiles(event=None):
     directory = full_directory
     to_be_named = os.listdir(path = directory)
 
+    length = getFileCount()
+
     for i in range(0, len(to_be_named)):
         extension = os.path.splitext(to_be_named[i])[1]
         os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, str(i)+extension))
-    
+        
+        # if i % 5 == 0:
+        #     progress['value'] = i
+        #     master.update_idletasks()
+        #     time.sleep(1)
     console.insert(2.0, "Files successfully renamed")
 
 def organizeFiles(event=None):
@@ -156,14 +163,19 @@ def changeDirectory(event=None):
     console.delete(1.0, 'end')
     console.insert(1.0, "Changing directory...\n")
     
+    global full_directory
     filename = filedialog.askdirectory()
-    if filename == None or filename == False:
+    if not filename:
         console.insert(2.0, "Operation cancelled\n")
         return 
-    global full_directory
     full_directory = filename 
     text.set(filename)
     console.insert(2.0, "Directory successfully changed\n")
+
+def getFileCount(event=None):
+    list = os.listdir(full_directory)
+    number = len(list)
+    return number 
 
 def clearConsole(event=None):
     console.delete(1.0, "end")
