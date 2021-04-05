@@ -1,5 +1,5 @@
 # Sesock File Management Tool
-A tool to help manage files, documents, and file systems. 
+Helps manage your files. 
 
 # Features
 
