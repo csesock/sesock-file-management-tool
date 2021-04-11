@@ -40,8 +40,13 @@ TAB_CONTROL.add(tabSettings, text="Settings")
 
 TAB_CONTROL.pack(expand=1, fill="both")
 
+<<<<<<< HEAD
 currentDirectory = ttk.Label(tabBasicOperations, text="Current Directory: ", foreground='#1232e6').place(x=40, y=20)
 directoryText = ttk.Label(tabBasicOperations, textvariable=text, foreground='dark slate gray').place(x=140, y=20)
+=======
+currentDirectory = ttk.Label(text="Current Directory: ").place(x=40, y=40)
+directoryText = ttk.Label(textvariable=text, foreground='dark slate gray').place(x=140, y=40)
+>>>>>>> 1e6a9af7402af6b34265983daf7d1b9224371cae
 
 #Interface buttons
 #Column 1
@@ -61,6 +66,14 @@ console = tk.Text(height=15, width=59, foreground='black', insertborderwidth=7, 
 console.place(x=10, y=250)
 #Progress Bar
 progress = ttk.Progressbar(master, orient=HORIZONTAL, length=480, mode='determinate').place(x=10, y=505)
+
+#Settings Buttons
+defaultDirectoryLabel = ttk.Label(tabSettings, text="Default Directory:").place(x=40, y=50)
+defaultDirectory = ttk.Entry(tabSettings, width=50).place(x=140, y=50)
+#defaultDirectory.set(full_directory[-50:])
+
+defaultBackupLabel = ttk.Label(tabSettings, text="Default Backup:").place(x=40, y=75)
+defaultBackup = ttk.Entry(tabSettings, width=50).place(x=140, y=75)
 
 #Menu
 menubar = tk.Menu(master)
@@ -147,12 +160,14 @@ def compressFiles(event=None):
 
 #Prints all files in current directory to console
 def listFiles(event=None):
+    line_number = 1
     files = os.listdir(full_directory)
     console.delete(1.0, 'end')
     counter = 1.0
     for file in files:
-        console.insert(counter, file+'\n')
+        console.insert(counter, str(line_number)+". "+file+'\n')
         counter+=1.0
+        line_number+=1
 
 #Changes current directory used by the tool
 def changeDirectory(event=None):
@@ -165,7 +180,7 @@ def changeDirectory(event=None):
         console.insert(2.0, "Operation cancelled\n")
         return 
     full_directory = filename 
-    text.set(filename)
+    text.set(filename[-50:])
     console.insert(2.0, "Directory successfully changed\n")
 
 #Returns int of file count
@@ -188,7 +203,7 @@ def resetDirectory(event=None):
     console.delete(1.0, "end")
     global full_directory
     full_directory = os.getcwd()
-    text.set(full_directory)
+    text.set(full_directory[-50:])
     console.insert(2.0, "Directory Reset")
 
 def changeTheme(theme):
