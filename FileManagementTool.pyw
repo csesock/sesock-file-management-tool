@@ -39,14 +39,10 @@ tabSettings = ttk.Frame(TAB_CONTROL)
 TAB_CONTROL.add(tabSettings, text="Settings")
 
 TAB_CONTROL.pack(expand=1, fill="both")
-
-<<<<<<< HEAD
 currentDirectory = ttk.Label(tabBasicOperations, text="Current Directory: ", foreground='#1232e6').place(x=40, y=20)
 directoryText = ttk.Label(tabBasicOperations, textvariable=text, foreground='dark slate gray').place(x=140, y=20)
-=======
 currentDirectory = ttk.Label(text="Current Directory: ").place(x=40, y=40)
 directoryText = ttk.Label(textvariable=text, foreground='dark slate gray').place(x=140, y=40)
->>>>>>> 1e6a9af7402af6b34265983daf7d1b9224371cae
 
 #Interface buttons
 #Column 1
@@ -165,7 +161,7 @@ def listFiles(event=None):
     console.delete(1.0, 'end')
     counter = 1.0
     for file in files:
-        console.insert(counter, str(line_number)+". "+file+'\n')
+        console.insert(counter, str(line_number)+") "+file+'\n')
         counter+=1.0
         line_number+=1
 
