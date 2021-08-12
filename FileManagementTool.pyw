@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import filedialog, messagebox
 import tkinter.scrolledtext as tkscrolled
 from tkinter.filedialog import askopenfilename
+from tkinter.font import Font 
 import os, shutil
 from os import rename, listdir
 import time
@@ -18,6 +19,7 @@ master.geometry('%dx%d+250+250' %(500, 560))
 master.resizable(False, False)
 
 BUTTON_WIDTH = 18
+#label_font = Font(size=8, weight='bold', family="Consolas")
 
 master.bind('<Control-c>', lambda event: console.delete(1.0, "end"))
 master.bind('<F1>', lambda event: aboutDialog())
@@ -40,7 +42,8 @@ tabSettings = ttk.Frame(TAB_CONTROL)
 TAB_CONTROL.add(tabSettings, text="Settings")
 
 TAB_CONTROL.pack(expand=1, fill="both")
-
+currentDirectory = ttk.Label(tabBasicOperations, text="Current Directory: ", foreground='#1232e6').place(x=40, y=20)
+directoryText = ttk.Label(tabBasicOperations, textvariable=text, foreground='dark slate gray').place(x=140, y=20)
 currentDirectory = ttk.Label(text="Current Directory: ").place(x=40, y=40)
 directoryText = ttk.Label(textvariable=text, foreground='dark slate gray').place(x=140, y=40)
 
@@ -162,7 +165,7 @@ def listFiles(event=None):
     console.delete(1.0, 'end')
     counter = 1.0
     for file in files:
-        console.insert(counter, str(line_number)+". "+file+'\n')
+        console.insert(counter, str(line_number)+") "+file+'\n')
         counter+=1.0
         line_number+=1
 
