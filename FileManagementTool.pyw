@@ -2,10 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 from tkinter import filedialog, messagebox
+import tkinter.scrolledtext as tkscrolled
 from tkinter.filedialog import askopenfilename
 import os, shutil
 from os import rename, listdir
 import time
+import random
+import string 
 
 master = tk.Tk()
 master.title("Sesock File Management Tool v0.0.4")
@@ -55,7 +58,7 @@ clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=
 resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=326, y=150)
 fileCountButton = ttk.Button(tabBasicOperations, text="File Count", width=BUTTON_WIDTH, command=lambda:outputFileCount()).place(x=326, y=180)
 #Console
-console = tk.Text(height=15, width=59, foreground='black', insertborderwidth=7, undo=True, bd=3)
+console = tkscrolled.ScrolledText(height=15, width=57, foreground='black', insertborderwidth=7, undo=True, bd=3)
 console.place(x=10, y=250)
 #Progress Bar
 progress = ttk.Progressbar(master, orient=HORIZONTAL, length=480, mode='determinate').place(x=10, y=505)
@@ -116,7 +119,8 @@ def renameFiles(event=None):
     counter = 2.0
     for i in range(0, len(to_be_named)):
         extension = os.path.splitext(to_be_named[i])[1]
-        os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, str(i)+extension))
+        filename = str(i+1)+'-'+''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(5))+extension
+        os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, filename))
         console.insert(counter, "Renaming file "+str(i)+" of "+str(total)+"\n")
         counter+=1        
     console.insert(counter, "Files successfully renamed")
@@ -177,7 +181,7 @@ def changeDirectory(event=None):
     console.insert(2.0, "Directory successfully changed\n")
 
 #Returns int of file count
-def getFileCount(event=None):
+def getFileCount():
     list = os.listdir(full_directory)
     number = len(list)
     return number
