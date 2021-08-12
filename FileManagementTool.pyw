@@ -10,6 +10,7 @@ from os import rename, listdir
 import time
 import random
 import string 
+from time import sleep
 
 master = tk.Tk()
 master.title("Sesock File Management Tool v0.0.4")
@@ -17,6 +18,10 @@ left_edge = master.winfo_screenwidth()/3
 top_edge = master.winfo_screenheight()/3
 master.geometry('%dx%d+250+250' %(500, 560))
 master.resizable(False, False)
+
+s = ttk.Style(master)
+master.tk.call('source', 'forest-dark.tcl')
+s.theme_use('forest-dark')
 
 BUTTON_WIDTH = 18
 #label_font = Font(size=8, weight='bold', family="Consolas")
@@ -42,26 +47,26 @@ tabSettings = ttk.Frame(TAB_CONTROL)
 TAB_CONTROL.add(tabSettings, text="Settings")
 
 TAB_CONTROL.pack(expand=1, fill="both")
-currentDirectory = ttk.Label(tabBasicOperations, text="Current Directory: ", foreground='#1232e6').place(x=40, y=20)
-directoryText = ttk.Label(tabBasicOperations, textvariable=text, foreground='dark slate gray').place(x=140, y=20)
-currentDirectory = ttk.Label(text="Current Directory: ").place(x=40, y=40)
-directoryText = ttk.Label(textvariable=text, foreground='dark slate gray').place(x=140, y=40)
+currentDirectory = ttk.Label(tabBasicOperations, text="Current Directory: ").place(x=20, y=20)
+directoryText = ttk.Label(tabBasicOperations, textvariable=text).place(x=130, y=20)
+#currentDirectory = ttk.Label(text="Current Directory: ").place(x=40, y=40)
+#directoryText = ttk.Label(textvariable=text, foreground='dark slate gray').place(x=140, y=40)
 
 #Interface buttons
 #Column 1
-renameButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, command=lambda:renameFiles()).place(x=40, y=60)
-organizeButton = ttk.Button(tabBasicOperations, text="Organize Files", width=BUTTON_WIDTH, command=lambda:organizeFiles()).place(x=40, y=90)
-moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, command=lambda:moveupFiles()).place(x=40, y=120)
-backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, command=lambda:backupFiles()).place(x=40, y=150)
-compressButton = ttk.Button(tabBasicOperations,text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=180)
+renameButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:renameFiles()).place(x=60, y=60)
+organizeButton = ttk.Button(tabBasicOperations, text="Organize Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:organizeFiles()).place(x=60, y=95)
+moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:moveupFiles()).place(x=60, y=130)
+backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:backupFiles()).place(x=60, y=165)
+#compressButton = ttk.Button(tabBasicOperations,text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=180)
 #Column 3
-directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=326, y=60)
-listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=326, y=90)
-clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=BUTTON_WIDTH, command=lambda:clearConsole()).place(x=326, y=120)
-resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=326, y=150)
-fileCountButton = ttk.Button(tabBasicOperations, text="File Count", width=BUTTON_WIDTH, command=lambda:outputFileCount()).place(x=326, y=180)
+directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=300, y=60)
+listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=300, y=95)
+clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=BUTTON_WIDTH, command=lambda:clearConsole()).place(x=300, y=130)
+resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=300, y=165)
+#fileCountButton = ttk.Button(tabBasicOperations, text="File Count", width=BUTTON_WIDTH, command=lambda:outputFileCount()).place(x=326, y=180)
 #Console
-console = tkscrolled.ScrolledText(height=15, width=57, foreground='black', insertborderwidth=7, undo=True, bd=3)
+console = tkscrolled.ScrolledText(height=15, width=65, foreground='white', undo=True)
 console.place(x=10, y=250)
 #Progress Bar
 progress = ttk.Progressbar(master, orient=HORIZONTAL, length=480, mode='determinate').place(x=10, y=505)
@@ -75,40 +80,40 @@ defaultBackupLabel = ttk.Label(tabSettings, text="Default Backup:").place(x=40, 
 defaultBackup = ttk.Entry(tabSettings, width=50).place(x=140, y=75)
 
 #Menu
-menubar = tk.Menu(master)
+# menubar = tk.Menu(master)
 
-filemenu = tk.Menu(menubar, tearoff=0)
-filemenu.add_command(label="Open...", accelerator='Ctrl+O')
-filemenu.add_command(label="Save", accelerator='Ctrl+S')
-filemenu.add_command(label="Save As...", accelerator='Ctrl+Alt+S')
-filemenu.add_separator()
-filemenu.add_command(label="Exit", accelerator='Alt+F4', command=lambda:master.destroy())
-menubar.add_cascade(label="File", menu=filemenu)
+# filemenu = tk.Menu(menubar, tearoff=0)
+# filemenu.add_command(label="Open...", accelerator='Ctrl+O')
+# filemenu.add_command(label="Save", accelerator='Ctrl+S')
+# filemenu.add_command(label="Save As...", accelerator='Ctrl+Alt+S')
+# filemenu.add_separator()
+# filemenu.add_command(label="Exit", accelerator='Alt+F4', command=lambda:master.destroy())
+# menubar.add_cascade(label="File", menu=filemenu)
 
-editmenu = tk.Menu(menubar, tearoff=0)
-editmenu.add_command(label="Clear Console", accelerator="Ctrl+C", command=lambda:console.delete(1.0, 'end'))
+# editmenu = tk.Menu(menubar, tearoff=0)
+# editmenu.add_command(label="Clear Console", accelerator="Ctrl+C", command=lambda:console.delete(1.0, 'end'))
 
-submenu = Menu(editmenu)
+# submenu = Menu(editmenu)
 
-submenu.add_command(label="clam", command=lambda:changeTheme('clam'))
-submenu.add_command(label="winnative", command=lambda:changeTheme('winnative'))
-submenu.add_command(label="alt", command=lambda:changeTheme('alt'))
-submenu.add_command(label="xpnative", command=lambda:changeTheme('xpnative'))
-submenu.add_command(label="default", command=lambda:changeTheme('default'))
-submenu.add_command(label="classic", command=lambda:changeTheme('classic'))
-submenu.add_command(label="vista", command=lambda:changeTheme('vista'))
+# submenu.add_command(label="clam", command=lambda:changeTheme('clam'))
+# submenu.add_command(label="winnative", command=lambda:changeTheme('winnative'))
+# submenu.add_command(label="alt", command=lambda:changeTheme('alt'))
+# submenu.add_command(label="xpnative", command=lambda:changeTheme('xpnative'))
+# submenu.add_command(label="default", command=lambda:changeTheme('default'))
+# submenu.add_command(label="classic", command=lambda:changeTheme('classic'))
+# submenu.add_command(label="vista", command=lambda:changeTheme('vista'))
 
-editmenu.add_cascade(label="Theme", menu=submenu)
-menubar.add_cascade(label="Edit", menu=editmenu)
+# editmenu.add_cascade(label="Theme", menu=submenu)
+# menubar.add_cascade(label="Edit", menu=editmenu)
 
-windowmenu = tk.Menu(menubar, tearoff=0)
-menubar.add_cascade(label="Window", menu=windowmenu)
-windowmenu.add_command(label="Full Screen")
-windowmenu.add_command(label="Reset Window")
+# windowmenu = tk.Menu(menubar, tearoff=0)
+# menubar.add_cascade(label="Window", menu=windowmenu)
+# windowmenu.add_command(label="Full Screen")
+# windowmenu.add_command(label="Reset Window")
 
-helpmenu = tk.Menu(menubar, tearoff=0)
-helpmenu.add_command(label="About", accelerator='F1', command=lambda:aboutDialog())
-menubar.add_cascade(label="Help", menu=helpmenu)
+# helpmenu = tk.Menu(menubar, tearoff=0)
+# helpmenu.add_command(label="About", accelerator='F1', command=lambda:aboutDialog())
+# menubar.add_cascade(label="Help", menu=helpmenu)
 
 #Batch renaming of files
 def renameFiles(event=None):
@@ -124,8 +129,9 @@ def renameFiles(event=None):
         extension = os.path.splitext(to_be_named[i])[1]
         filename = str(i+1)+'-'+''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(5))+extension
         os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, filename))
+        #load(3)
         console.insert(counter, "Renaming file "+str(i)+" of "+str(total)+"\n")
-        counter+=1        
+        counter+=1     
     console.insert(counter, "Files successfully renamed")
 
 def organizeFiles(event=None):
@@ -210,11 +216,17 @@ def changeTheme(theme):
     s = ttk.Style()
     s.theme_use(theme)
 
+def load(n):
+    console.delete(1.0, 'end')
+    for i in range(n):
+        sleep(0.1)
+        console.insert(1.0, f"{i/n*100:.1f} %", end="\r")  
+
 def aboutDialog():
     dialog = """ Author: Chris Sesock \n Version: 0.0.3 \n Commit: 077788d6166f5d69c9b660454aa264dd62956fb6 \n Date: 2020-11-06:12:00:00 \n Python: 3.8.3 \n OS: Windows_NT x64 10.0.10363
              """
     messagebox.showinfo("About", dialog)
 
 if __name__ == '__main__':
-    master.config(menu=menubar)
+    #master.config(menu=menubar)
     master.mainloop()
