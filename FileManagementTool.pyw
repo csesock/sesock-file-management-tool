@@ -43,27 +43,27 @@ text.set(full_directory[-50:])
 TAB_CONTROL = ttk.Notebook(master)
 tabBasicOperations = ttk.Frame(TAB_CONTROL)
 TAB_CONTROL.add(tabBasicOperations, text="Basic Tools")
+tabAdvancedOperations = ttk.Frame(TAB_CONTROL)
+TAB_CONTROL.add(tabAdvancedOperations, text="Advanced Tools")
 tabSettings = ttk.Frame(TAB_CONTROL)
 TAB_CONTROL.add(tabSettings, text="Settings")
 
 TAB_CONTROL.pack(expand=1, fill="both")
 currentDirectory = ttk.Label(tabBasicOperations, text="Current Directory: ").place(x=20, y=20)
 directoryText = ttk.Label(tabBasicOperations, textvariable=text).place(x=130, y=20)
-#currentDirectory = ttk.Label(text="Current Directory: ").place(x=40, y=40)
-#directoryText = ttk.Label(textvariable=text, foreground='dark slate gray').place(x=140, y=40)
 
 #Interface buttons
 #Column 1
-renameButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:renameFiles()).place(x=60, y=60)
-organizeButton = ttk.Button(tabBasicOperations, text="Organize Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:organizeFiles()).place(x=60, y=95)
-moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:moveupFiles()).place(x=60, y=130)
-backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:backupFiles()).place(x=60, y=165)
+renameButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:renameFiles()).place(x=80, y=60)
+organizeButton = ttk.Button(tabBasicOperations, text="Organize Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:organizeFiles()).place(x=80, y=95)
+moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:moveupFiles()).place(x=80, y=130)
+backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:backupFiles()).place(x=80, y=165)
 #compressButton = ttk.Button(tabBasicOperations,text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=180)
 #Column 3
-directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=300, y=60)
-listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=300, y=95)
-clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=BUTTON_WIDTH, command=lambda:clearConsole()).place(x=300, y=130)
-resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=300, y=165)
+directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=250, y=60)
+listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=250, y=95)
+clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=BUTTON_WIDTH, command=lambda:clearConsole()).place(x=250, y=130)
+resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=250, y=165)
 #fileCountButton = ttk.Button(tabBasicOperations, text="File Count", width=BUTTON_WIDTH, command=lambda:outputFileCount()).place(x=326, y=180)
 #Console
 console = tkscrolled.ScrolledText(height=15, width=65, foreground='white', undo=True)
@@ -72,48 +72,15 @@ console.place(x=10, y=250)
 progress = ttk.Progressbar(master, orient=HORIZONTAL, length=480, mode='determinate').place(x=10, y=505)
 
 #Settings Buttons
-defaultDirectoryLabel = ttk.Label(tabSettings, text="Default Directory:").place(x=40, y=50)
-defaultDirectory = ttk.Entry(tabSettings, width=50).place(x=140, y=50)
-#defaultDirectory.set(full_directory[-50:])
+defaultDirectoryLabel = ttk.Label(tabSettings, text="Default Directory:").place(x=30, y=55)
+defaultDirectory = ttk.Entry(tabSettings, width=40)
+defaultDirectory.place(x=140, y=50)
+defaultDirectory.insert(0, full_directory)
 
-defaultBackupLabel = ttk.Label(tabSettings, text="Default Backup:").place(x=40, y=75)
-defaultBackup = ttk.Entry(tabSettings, width=50).place(x=140, y=75)
-
-#Menu
-# menubar = tk.Menu(master)
-
-# filemenu = tk.Menu(menubar, tearoff=0)
-# filemenu.add_command(label="Open...", accelerator='Ctrl+O')
-# filemenu.add_command(label="Save", accelerator='Ctrl+S')
-# filemenu.add_command(label="Save As...", accelerator='Ctrl+Alt+S')
-# filemenu.add_separator()
-# filemenu.add_command(label="Exit", accelerator='Alt+F4', command=lambda:master.destroy())
-# menubar.add_cascade(label="File", menu=filemenu)
-
-# editmenu = tk.Menu(menubar, tearoff=0)
-# editmenu.add_command(label="Clear Console", accelerator="Ctrl+C", command=lambda:console.delete(1.0, 'end'))
-
-# submenu = Menu(editmenu)
-
-# submenu.add_command(label="clam", command=lambda:changeTheme('clam'))
-# submenu.add_command(label="winnative", command=lambda:changeTheme('winnative'))
-# submenu.add_command(label="alt", command=lambda:changeTheme('alt'))
-# submenu.add_command(label="xpnative", command=lambda:changeTheme('xpnative'))
-# submenu.add_command(label="default", command=lambda:changeTheme('default'))
-# submenu.add_command(label="classic", command=lambda:changeTheme('classic'))
-# submenu.add_command(label="vista", command=lambda:changeTheme('vista'))
-
-# editmenu.add_cascade(label="Theme", menu=submenu)
-# menubar.add_cascade(label="Edit", menu=editmenu)
-
-# windowmenu = tk.Menu(menubar, tearoff=0)
-# menubar.add_cascade(label="Window", menu=windowmenu)
-# windowmenu.add_command(label="Full Screen")
-# windowmenu.add_command(label="Reset Window")
-
-# helpmenu = tk.Menu(menubar, tearoff=0)
-# helpmenu.add_command(label="About", accelerator='F1', command=lambda:aboutDialog())
-# menubar.add_cascade(label="Help", menu=helpmenu)
+defaultBackupLabel = ttk.Label(tabSettings, text="Default Backup:").place(x=30, y=95)
+defaultBackup = ttk.Entry(tabSettings, width=40)
+defaultBackup.place(x=140, y=90)
+defaultBackup.insert(0, full_directory+'\\backup')
 
 #Batch renaming of files
 def renameFiles(event=None):
@@ -169,9 +136,12 @@ def listFiles(event=None):
     line_number = 1
     files = os.listdir(full_directory)
     console.delete(1.0, 'end')
-    counter = 1.0
+    counter = 2.0
+    console.insert(1.0, "Count \tFilename \t\tFiletype\n")
     for file in files:
-        console.insert(counter, str(line_number)+") "+file+'\n')
+        filename = os.path.splitext(file)[0]
+        extension = os.path.splitext(file)[1]
+        console.insert(counter, str(line_number)+")\t"+filename+'\t\t'+extension+'\n')
         counter+=1.0
         line_number+=1
 
@@ -228,5 +198,4 @@ def aboutDialog():
     messagebox.showinfo("About", dialog)
 
 if __name__ == '__main__':
-    #master.config(menu=menubar)
     master.mainloop()
