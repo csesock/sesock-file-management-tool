@@ -13,7 +13,7 @@ import string
 from time import sleep
 
 master = tk.Tk()
-master.title("Sesock File Management Tool v0.0.4")
+master.title("Sesock File Management Tool v0.0.5")
 left_edge = master.winfo_screenwidth()/3
 top_edge = master.winfo_screenheight()/3
 master.geometry('%dx%d+250+250' %(500, 560))
@@ -23,14 +23,12 @@ s = ttk.Style(master)
 master.tk.call('source', 'forest-dark.tcl')
 s.theme_use('forest-dark')
 
-BUTTON_WIDTH = 18
-#label_font = Font(size=8, weight='bold', family="Consolas")
+BUTTON_WIDTH = 17
 
 master.bind('<Control-c>', lambda event: console.delete(1.0, "end"))
 master.bind('<F1>', lambda event: aboutDialog())
 
 try:
-    dirp = os.path.dirname(__file__)
     photo = PhotoImage(file="assets\\IconSmall.png")
     master.iconphoto(False, photo)
 except:
@@ -38,7 +36,7 @@ except:
 
 full_directory = os.getcwd()
 text = tk.StringVar()
-text.set(full_directory[-50:])
+text.set(full_directory[-48:])
 
 TAB_CONTROL = ttk.Notebook(master)
 tabBasicOperations = ttk.Frame(TAB_CONTROL)
@@ -50,7 +48,7 @@ TAB_CONTROL.add(tabSettings, text="Settings")
 
 TAB_CONTROL.pack(expand=1, fill="both")
 currentDirectory = ttk.Label(tabBasicOperations, text="Current Directory: ").place(x=20, y=20)
-directoryText = ttk.Label(tabBasicOperations, textvariable=text).place(x=130, y=20)
+directoryText = ttk.Label(tabBasicOperations, textvariable=text, foreground="white").place(x=130, y=20)
 
 #Interface buttons
 #Column 1
@@ -69,10 +67,9 @@ resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", wi
 check_frame = ttk.LabelFrame(master, text="Options").place(x=320, y=60)
 check_1 = ttk.Checkbutton(check_frame, text="Unchecked")
 
-
 # Create a Frame for the Radiobuttons
 radio_frame = ttk.LabelFrame(tabBasicOperations, text="Name Schema", padding=(5, 5))
-radio_frame.place(x=340, y=53)
+radio_frame.place(x=350, y=53)
 d = tk.IntVar(value=3)
 # Radiobuttons
 radio_1 = ttk.Radiobutton(radio_frame, text="Integers", variable=d, value=1)
@@ -100,6 +97,8 @@ length_text2 = tk.StringVar()
 length_text2.set("0")
 length_label2 = ttk.Label(textvariable=length_text2, foreground='#52565e').place(x=140, y=530)
 
+system_label = ttk.Label(text="win32", foreground="#52565e").place(x=452, y=530)
+
 # tv = ttk.Treeview(master, show='tree')
 # tv.place(x=50, y=50)
 # tv.heading('#0',text='Dir：'+full_directory,anchor='w')
@@ -118,13 +117,18 @@ length_label2 = ttk.Label(textvariable=length_text2, foreground='#52565e').place
 #Settings Buttons
 defaultDirectoryLabel = ttk.Label(tabSettings, text="Default Directory:").place(x=30, y=55)
 defaultDirectory = ttk.Entry(tabSettings, width=40)
-defaultDirectory.place(x=140, y=50)
+defaultDirectory.place(x=160, y=50)
 defaultDirectory.insert(0, full_directory)
 
 defaultBackupLabel = ttk.Label(tabSettings, text="Default Backup:").place(x=30, y=95)
 defaultBackup = ttk.Entry(tabSettings, width=40)
-defaultBackup.place(x=140, y=90)
+defaultBackup.place(x=160, y=90)
 defaultBackup.insert(0, full_directory+'\\backup')
+
+defaultHashLengthLabel = ttk.Label(tabSettings, text="Default Hash Length:").place(x=30, y=135)
+defaultHashLength = ttk.Entry(tabSettings, width=5)
+defaultHashLength.place(x=160, y=130)
+defaultHashLength.insert(0, '10')
 
 #Batch renaming of files
 def renameFiles(event=None):
@@ -136,14 +140,30 @@ def renameFiles(event=None):
 
     total = getFileCount()
     counter = 2.0
-    for i in range(0, len(to_be_named)):
-        extension = os.path.splitext(to_be_named[i])[1]
-        filename = str(i+1)+'-'+''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(5))+extension
-        os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, filename))
-        #load(3)
-        console.insert(counter, "Renaming file "+str(i)+" of "+str(total)+"\n")
-        counter+=1     
-    console.insert(counter, "Files successfully renamed")
+    if d.get() == 3: #mix of hashes and numbers
+        for i in range(0, len(to_be_named)):
+            extension = os.path.splitext(to_be_named[i])[1]
+            filename = str(i+1)+'-'+''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(int(defaultHashLength.get())))+extension
+            os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, filename))
+            console.insert(counter, "Renaming file "+str(i)+" of "+str(total)+"\n")
+            counter+=1     
+        console.insert(counter, "Files successfully renamed")
+    elif d.get() == 2: # just hashes
+        for i in range(0, len(to_be_named)):
+            extension = os.path.splitext(to_be_named[i])[1]
+            filename = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(int(defaultHashLength.get())))+extension
+            os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, filename))
+            console.insert(counter, "Renaming file "+str(i)+" of "+str(total)+"\n")
+            counter+=1     
+        console.insert(counter, "Files successfully renamed")
+    else:
+        for i in range(0, len(to_be_named)):
+            extension = os.path.splitext(to_be_named[i])[1]
+            filename = str(i+1)+extension
+            os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, filename))
+            console.insert(counter, "Renaming file "+str(i)+" of "+str(total)+"\n")
+            counter+=1     
+        console.insert(counter, "Files successfully renamed")
 
 def organizeFiles(event=None):
     console.delete(1.0, "end")
@@ -181,15 +201,13 @@ def listFiles(event=None):
     files = os.listdir(full_directory)
     console.delete(1.0, 'end')
     counter = 2.0
-    console.insert(1.0, "Count \tFilename \t\tFiletype\n")
+    console.insert(1.0, "Count \tFilename\n")
     for file in files:
         filename = os.path.splitext(file)[0]
         extension = os.path.splitext(file)[1]
-        console.insert(counter, str(line_number)+")\t"+filename+'\t\t'+extension+'\n')
+        console.insert(counter, str(line_number)+")\t"+filename+'\n')
         counter+=1.0
         line_number+=1
-
-
 
 #Changes current directory used by the tool
 def changeDirectory(event=None):
@@ -202,7 +220,7 @@ def changeDirectory(event=None):
         console.insert(2.0, "Operation cancelled\n")
         return 
     full_directory = filename 
-    text.set(filename[-50:])
+    text.set(filename[-48:])
     console.insert(2.0, "Directory successfully changed\n")
 
 #Returns int of file count
@@ -225,7 +243,7 @@ def resetDirectory(event=None):
     console.delete(1.0, "end")
     global full_directory
     full_directory = os.getcwd()
-    text.set(full_directory[-50:])
+    text.set(full_directory[-48:])
     console.insert(2.0, "Directory Reset")
 
 def changeTheme(theme):
@@ -239,10 +257,9 @@ def load(n):
         console.insert(1.0, f"{i/n*100:.1f} %", end="\r")  
 
 def aboutDialog():
-    dialog = """ Author: Chris Sesock \n Version: 0.0.3 \n Commit: 077788d6166f5d69c9b660454aa264dd62956fb6 \n Date: 2020-11-06:12:00:00 \n Python: 3.8.3 \n OS: Windows_NT x64 10.0.10363
+    dialog = """ Author: Chris Sesock \n Version: 0.0.5 \n Commit: 077788d6166f5d69c9b660454aa264dd62956fb6 \n Date: 2021--06:12:00:00 \n Python: 3.8.5 \n OS: Windows_NT x64 10.0.10363
              """
     messagebox.showinfo("About", dialog)
-
 
 if __name__ == '__main__':
     master.mainloop()
