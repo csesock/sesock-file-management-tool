@@ -11,6 +11,7 @@ import time
 import random
 import string 
 from time import sleep
+import hashlib
 
 master = tk.Tk()
 master.title("Sesock File Management Tool v0.0.5")
@@ -55,7 +56,7 @@ directoryText = ttk.Label(tabBasicOperations, textvariable=text, foreground="whi
 renameButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:renameFiles()).place(x=20, y=60)
 organizeButton = ttk.Button(tabBasicOperations, text="Organize Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:organizeFiles()).place(x=20, y=95)
 moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:moveupFiles()).place(x=20, y=130)
-backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:backupFiles()).place(x=20, y=165)
+backupButton = ttk.Button(tabBasicOperations, text='Hash Files', width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:hashFiles()).place(x=20, y=165)
 #compressButton = ttk.Button(tabBasicOperations,text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=180)
 #Column 3
 directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=180, y=60)
@@ -179,6 +180,19 @@ def moveupFiles(event=None):
                 shutil.move(os.path.join(root, file), filename)
             except OSError:
                 pass
+
+def hashFiles():
+    console.delete(1.0, 'end')
+    console.insert(1.0, "Generating MD5 hashes for all files in current directory...")
+
+    to_be_named = os.listdir(path = full_directory)
+    with open('MD5 hashes.txt', 'w', encoding='utf-8') as builtfile:
+        for i in range(0, len(to_be_named)):
+            
+            builtfile.write(hashlib.sha256(full_directory+to_be_named[i]+'\n'))
+            #print(full_directory+to_be_named[i])
+
+
 
 #Creates backup of files in current directory
 def backupFiles(event=None):
