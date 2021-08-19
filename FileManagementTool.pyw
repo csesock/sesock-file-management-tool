@@ -54,22 +54,66 @@ directoryText = ttk.Label(tabBasicOperations, textvariable=text).place(x=130, y=
 
 #Interface buttons
 #Column 1
-renameButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:renameFiles()).place(x=80, y=60)
-organizeButton = ttk.Button(tabBasicOperations, text="Organize Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:organizeFiles()).place(x=80, y=95)
-moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:moveupFiles()).place(x=80, y=130)
-backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:backupFiles()).place(x=80, y=165)
+renameButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:renameFiles()).place(x=20, y=60)
+organizeButton = ttk.Button(tabBasicOperations, text="Organize Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:organizeFiles()).place(x=20, y=95)
+moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:moveupFiles()).place(x=20, y=130)
+backupButton = ttk.Button(tabBasicOperations, text='Backup Files', width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:backupFiles()).place(x=20, y=165)
 #compressButton = ttk.Button(tabBasicOperations,text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=180)
 #Column 3
-directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=250, y=60)
-listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=250, y=95)
-clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=BUTTON_WIDTH, command=lambda:clearConsole()).place(x=250, y=130)
-resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=250, y=165)
+directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=180, y=60)
+listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=180, y=95)
+clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=BUTTON_WIDTH, command=lambda:clearConsole()).place(x=180, y=130)
+resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=180, y=165)
 #fileCountButton = ttk.Button(tabBasicOperations, text="File Count", width=BUTTON_WIDTH, command=lambda:outputFileCount()).place(x=326, y=180)
+
+check_frame = ttk.LabelFrame(master, text="Options").place(x=320, y=60)
+check_1 = ttk.Checkbutton(check_frame, text="Unchecked")
+
+
+# Create a Frame for the Radiobuttons
+radio_frame = ttk.LabelFrame(tabBasicOperations, text="Name Schema", padding=(5, 5))
+radio_frame.place(x=340, y=53)
+d = tk.IntVar(value=3)
+# Radiobuttons
+radio_1 = ttk.Radiobutton(radio_frame, text="Integers", variable=d, value=1)
+radio_1.grid(row=0, column=0, padx=5, pady=6, sticky="nsew")
+radio_2 = ttk.Radiobutton(radio_frame, text="Hashes", variable=d, value=2)
+radio_2.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+radio_3 = ttk.Radiobutton(radio_frame, text="Mixed", variable=d, value=3)
+#radio_3.state(["alternate"])
+radio_3.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
+
+
 #Console
-console = tkscrolled.ScrolledText(height=15, width=65, foreground='white', undo=True)
-console.place(x=10, y=250)
+console = tkscrolled.ScrolledText(height=15, width=65, foreground='white', background='black', undo=True)
+console.place(x=10, y=280)
 #Progress Bar
-progress = ttk.Progressbar(master, orient=HORIZONTAL, length=480, mode='determinate').place(x=10, y=505)
+#progress = ttk.Progressbar(master, orient=HORIZONTAL, length=480, mode='determinate').place(x=10, y=505)
+
+length_label1 = ttk.Label(text="Lines : ", foreground='#52565e').place(x=10, y=530)
+length_text = tk.StringVar()
+length_text.set("0")
+length_label = ttk.Label(textvariable=length_text, foreground='#52565e').place(x=55, y=530)
+
+length_label2 = ttk.Label(text="Length : ", foreground='#52565e').place(x=85, y=530)
+length_text2 = tk.StringVar()
+length_text2.set("0")
+length_label2 = ttk.Label(textvariable=length_text2, foreground='#52565e').place(x=140, y=530)
+
+# tv = ttk.Treeview(master, show='tree')
+# tv.place(x=50, y=50)
+# tv.heading('#0',text='Dir：'+full_directory,anchor='w')
+# path=os.path.abspath(full_directory)
+# node=tv.insert('','end',text=path,open=True)
+# def traverse_dir(parent,path):
+#     for d in os.listdir(path):
+#         full_path=os.path.join(path,d)
+#         isdir = os.path.isdir(full_path)
+#         id=tv.insert(parent,'end',text=d,open=False)
+#         if isdir:
+#             traverse_dir(id,full_path)
+# traverse_dir(node,path)
+# tv.pack()
 
 #Settings Buttons
 defaultDirectoryLabel = ttk.Label(tabSettings, text="Default Directory:").place(x=30, y=55)
@@ -145,6 +189,8 @@ def listFiles(event=None):
         counter+=1.0
         line_number+=1
 
+
+
 #Changes current directory used by the tool
 def changeDirectory(event=None):
     console.delete(1.0, 'end')
@@ -196,6 +242,7 @@ def aboutDialog():
     dialog = """ Author: Chris Sesock \n Version: 0.0.3 \n Commit: 077788d6166f5d69c9b660454aa264dd62956fb6 \n Date: 2020-11-06:12:00:00 \n Python: 3.8.3 \n OS: Windows_NT x64 10.0.10363
              """
     messagebox.showinfo("About", dialog)
+
 
 if __name__ == '__main__':
     master.mainloop()
