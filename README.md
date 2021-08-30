@@ -11,7 +11,7 @@ Current features of this tool include:
 
 This tool is in the alpha stage. Most features are yet to be added/implemented. 
 
-![UI](https://puu.sh/HuXlW/3f2fbda705.png)
+![UI](https://imgur.com/gZVOXS3.png)
 
 ##
 
