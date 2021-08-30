@@ -5,26 +5,23 @@ from tkinter import filedialog, messagebox
 import tkinter.scrolledtext as tkscrolled
 from tkinter.filedialog import askopenfilename
 from tkinter.font import Font 
-import os, shutil
-from os import rename, listdir
-import time
-import random
-import string 
+import os, shutil, re, string, random, time, hashlib
 from time import sleep
-import hashlib
 
 master = tk.Tk()
-master.title("Sesock File Management Tool v0.0.5")
+master.title("Sesock File Management Tool v0.0.6")
 left_edge = master.winfo_screenwidth()/3
 top_edge = master.winfo_screenheight()/3
 master.geometry('%dx%d+250+250' %(500, 560))
 master.resizable(False, False)
 
-s = ttk.Style(master)
+regex = '\([^()]*\)'
+
 master.tk.call('source', 'forest-dark.tcl')
-s.theme_use('forest-dark')
+s = ttk.Style(master).theme_use('forest-dark')
 
 BUTTON_WIDTH = 17
+console_font = Font(family="Consolas", size=11)
 
 master.bind('<Control-c>', lambda event: console.delete(1.0, "end"))
 master.bind('<F1>', lambda event: aboutDialog())
@@ -46,10 +43,12 @@ tabAdvancedOperations = ttk.Frame(TAB_CONTROL)
 TAB_CONTROL.add(tabAdvancedOperations, text="Advanced Tools")
 tabSettings = ttk.Frame(TAB_CONTROL)
 TAB_CONTROL.add(tabSettings, text="Settings")
-
 TAB_CONTROL.pack(expand=1, fill="both")
-currentDirectory = ttk.Label(tabBasicOperations, text="Current Directory: ").place(x=20, y=20)
-directoryText = ttk.Label(tabBasicOperations, textvariable=text, foreground="white").place(x=130, y=20)
+
+currentDirectory1 = ttk.Label(tabBasicOperations, text="Current Directory: ").place(x=20, y=20)
+directoryText1 = ttk.Label(tabBasicOperations, textvariable=text, foreground="white").place(x=130, y=20)
+currentDirectory2 = ttk.Label(tabAdvancedOperations, text="Current Directory: ").place(x=20, y=20)
+directoryText2 = ttk.Label(tabAdvancedOperations, textvariable=text, foreground="white").place(x=130, y=20)
 
 #Interface buttons
 #Column 1
@@ -57,13 +56,11 @@ renameButton = ttk.Button(tabBasicOperations, text="Rename Files", width=BUTTON_
 organizeButton = ttk.Button(tabBasicOperations, text="Organize Files", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:organizeFiles()).place(x=20, y=95)
 moveupButton = ttk.Button(tabBasicOperations, text="Move Files Up", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:moveupFiles()).place(x=20, y=130)
 backupButton = ttk.Button(tabBasicOperations, text='Hash Files', width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:hashFiles()).place(x=20, y=165)
-#compressButton = ttk.Button(tabBasicOperations,text='Zip Files', width=BUTTON_WIDTH, command=lambda:compressFiles()).place(x=40, y=180)
-#Column 3
+#Column 2
 directoryButton = ttk.Button(tabBasicOperations, text="Change Directory...", width=BUTTON_WIDTH, command=lambda:changeDirectory()).place(x=180, y=60)
 listfilesButton = ttk.Button(tabBasicOperations,text='List Files', width=BUTTON_WIDTH, command=lambda:listFiles()).place(x=180, y=95)
 clearConsoleButton = ttk.Button(tabBasicOperations, text="Clear Console", width=BUTTON_WIDTH, command=lambda:clearConsole()).place(x=180, y=130)
 resetDirectoryButton = ttk.Button(tabBasicOperations, text="Reset Directory", width=BUTTON_WIDTH, command=lambda:resetDirectory()).place(x=180, y=165)
-#fileCountButton = ttk.Button(tabBasicOperations, text="File Count", width=BUTTON_WIDTH, command=lambda:outputFileCount()).place(x=326, y=180)
 
 check_frame = ttk.LabelFrame(master, text="Options").place(x=320, y=60)
 check_1 = ttk.Checkbutton(check_frame, text="Unchecked")
@@ -78,16 +75,15 @@ radio_1.grid(row=0, column=0, padx=5, pady=6, sticky="nsew")
 radio_2 = ttk.Radiobutton(radio_frame, text="Hashes", variable=d, value=2)
 radio_2.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 radio_3 = ttk.Radiobutton(radio_frame, text="Mixed", variable=d, value=3)
-#radio_3.state(["alternate"])
 radio_3.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
 
-
 #Console
-console = tkscrolled.ScrolledText(height=15, width=65, foreground='white', background='black', undo=True)
+console = tkscrolled.ScrolledText(height=13, width=57, font=console_font, foreground='white', background='black', undo=True)
 console.place(x=10, y=280)
-#Progress Bar
-#progress = ttk.Progressbar(master, orient=HORIZONTAL, length=480, mode='determinate').place(x=10, y=505)
+console.insert(1.0, "Sesock File Management Tool [Version 0.0.6]\n")
+console.insert(2.0, "(c) 2021 Christopher Sesock ")
 
+#Footer
 length_label1 = ttk.Label(text="Lines : ", foreground='#52565e').place(x=10, y=530)
 length_text = tk.StringVar()
 length_text.set("0")
@@ -100,20 +96,17 @@ length_label2 = ttk.Label(textvariable=length_text2, foreground='#52565e').place
 
 system_label = ttk.Label(text="win32", foreground="#52565e").place(x=452, y=530)
 
-# tv = ttk.Treeview(master, show='tree')
-# tv.place(x=50, y=50)
-# tv.heading('#0',text='Dir：'+full_directory,anchor='w')
-# path=os.path.abspath(full_directory)
-# node=tv.insert('','end',text=path,open=True)
-# def traverse_dir(parent,path):
-#     for d in os.listdir(path):
-#         full_path=os.path.join(path,d)
-#         isdir = os.path.isdir(full_path)
-#         id=tv.insert(parent,'end',text=d,open=False)
-#         if isdir:
-#             traverse_dir(id,full_path)
-# traverse_dir(node,path)
-# tv.pack()
+#Advanced Tab
+regexLabel = ttk.Label(tabAdvancedOperations, text="Regex").place(x=20, y=75)
+replacementLabel = ttk.Label(tabAdvancedOperations, text="Replacement").place(x=235, y=75)
+modifyButton = ttk.Button(tabAdvancedOperations, text="Modify with Regex", width=BUTTON_WIDTH, style="Accent.TButton", command=lambda:modifyWithRegex()).place(x=20, y=135)
+
+modifyEntry = ttk.Entry(tabAdvancedOperations, width=28)
+modifyEntry.place(x=20, y=100)
+modifyEntry.insert(0, regex)
+
+parameterEntry = ttk.Entry(tabAdvancedOperations, width=29)
+parameterEntry.place(x=235, y=100)
 
 #Settings Buttons
 defaultDirectoryLabel = ttk.Label(tabSettings, text="Default Directory:").place(x=30, y=55)
@@ -129,7 +122,7 @@ defaultBackup.insert(0, full_directory+'\\backup')
 defaultHashLengthLabel = ttk.Label(tabSettings, text="Default Hash Length:").place(x=30, y=135)
 defaultHashLength = ttk.Entry(tabSettings, width=5)
 defaultHashLength.place(x=160, y=130)
-defaultHashLength.insert(0, '10')
+defaultHashLength.insert(0, '5')
 
 #Batch renaming of files
 def renameFiles(event=None):
@@ -161,10 +154,22 @@ def renameFiles(event=None):
         for i in range(0, len(to_be_named)):
             extension = os.path.splitext(to_be_named[i])[1]
             filename = str(i+1)+extension
-            os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, filename))
+            #os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, re.sub('\([^()]*\)', "", to_be_named[i])))
+            #re.sub('\([^()]*\)', "", to_be_named[i])
             console.insert(counter, "Renaming file "+str(i)+" of "+str(total)+"\n")
             counter+=1     
         console.insert(counter, "Files successfully renamed")
+
+def modifyWithRegex():
+    to_be_named = os.listdir(full_directory)
+    #regex = 
+    try:
+        for i in range(0, len(to_be_named)):
+            extension = os.path.splitext(to_be_named[i])[1]
+            filename = str(i+1)+extension
+            os.rename(os.path.join(full_directory, to_be_named[i]), os.path.join(full_directory, re.sub(modifyEntry.get(), "", to_be_named[i])))
+    except:
+        print("There was an unknown error...")
 
 def organizeFiles(event=None):
     console.delete(1.0, "end")
@@ -184,15 +189,11 @@ def moveupFiles(event=None):
 def hashFiles():
     console.delete(1.0, 'end')
     console.insert(1.0, "Generating MD5 hashes for all files in current directory...")
-
+    directory = full_directory
+    to_be_named = os.listdir(path = directory)
+    filenames = glob.glob(full_directory)
     to_be_named = os.listdir(path = full_directory)
-    with open('MD5 hashes.txt', 'w', encoding='utf-8') as builtfile:
-        for i in range(0, len(to_be_named)):
-            
-            builtfile.write(hashlib.sha256(full_directory+to_be_named[i]+'\n'))
-            #print(full_directory+to_be_named[i])
-
-
+    hashes = []
 
 #Creates backup of files in current directory
 def backupFiles(event=None):
@@ -259,10 +260,6 @@ def resetDirectory(event=None):
     full_directory = os.getcwd()
     text.set(full_directory[-48:])
     console.insert(2.0, "Directory Reset")
-
-def changeTheme(theme):
-    s = ttk.Style()
-    s.theme_use(theme)
 
 def load(n):
     console.delete(1.0, 'end')
